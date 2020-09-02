@@ -1,0 +1,30 @@
+name: Build and Deploy
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build:
+    runs-on:  ubuntu-latest
+    steps:
+      -  name: Checkout
+         uses: actions/checkout@v2.3.1
+         with:
+           persist-credentials: false
+      -  name: Set up Python 3.8
+         uses: actions/setup-python@v1
+         with:
+           python-version: 3.8
+      -  name: Install Pelican
+         run: |
+           python -m pip install --upgrade pip
+           pip install invoke pelican[Markdown]
+      -  name: Build
+         run: |
+           pelican content
+      -  name: Deploy
+         uses: JamesIves/github-pages-deploy-action@3.5.9
+         with:
+           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+           BRANCH: gh-pages
+           FOLDER: output
